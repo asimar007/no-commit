@@ -24,10 +24,19 @@ const config = new Conf<ConfigSchema>({
 //     return config.get(key as any);
 //   };
 
+// get Config
 export const getConfig = <K extends keyof ConfigSchema>(
   key: K,
 ): ConfigSchema[K] => {
   return config.get(key);
+};
+
+// set Config
+export const setConfig = <K extends keyof ConfigSchema>(
+  key: K,
+  value: ConfigSchema[K],
+) => {
+  config.set(key, value);
 };
 
 export const getAllConfig = (): ConfigSchema => {
