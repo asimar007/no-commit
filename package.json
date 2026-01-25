@@ -1,7 +1,33 @@
 {
   "name": "autocommit",
-  "module": "index.ts",
+  "version": "0.0.1",
+  "description": "Writes your git commit messages for you with AI using Gemini",
   "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "autocommit": "./dist/index.js",
+    "ac": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "ai",
+    "gemini",
+    "cli"
+  ],
+  "author": "Asim Sk",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "private": true,
   "devDependencies": {
     "@types/node": "^25.0.10"
