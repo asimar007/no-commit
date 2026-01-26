@@ -1,12 +1,12 @@
 {
   "name": "autocommit",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Writes your git commit messages for you with AI using Gemini",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "autocommit": "./dist/index.js",
-    "ac": "./dist/index.js"
+    "autocommit": "dist/index.js",
+    "ac": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -28,7 +28,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "private": true,
   "devDependencies": {
     "@types/node": "^25.0.10"
   },
