@@ -1,0 +1,42 @@
+# Source files
+src/
+tsconfig.json
+
+# Development
+.git/
+.gitignore
+.gitattributes
+.nvmrc
+.cursor/
+.idea/
+.vscode/
+.editorconfig
+
+# Tests
+test/
+tests/
+__tests__/
+*.test.ts
+*.spec.ts
+coverage/
+*.lcov
+
+# Build artifacts
+*.tgz
+*.tsbuildinfo
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation (keep README and LICENSE)
+CONTRIBUTING.md
+CHANGELOG.md
+docs/
