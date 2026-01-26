@@ -1,12 +1,12 @@
 {
-  "name": "autocommit",
-  "version": "0.0.0",
+  "name": "nocommit",
+  "version": "0.0.1",
   "description": "Writes your git commit messages for you with AI using Gemini",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "autocommit": "dist/index.js",
-    "ac": "dist/index.js"
+    "nocommit": "dist/index.js",
+    "nc": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -40,6 +40,7 @@
     "commander": "^14.0.2",
     "conf": "^15.0.2",
     "execa": "^9.6.1",
+    "nocommit": "^0.0.1",
     "picocolors": "^1.1.1"
   }
 }

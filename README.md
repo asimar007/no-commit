@@ -1,4 +1,4 @@
-# autocommit
+# nocommit
 
 To install dependencies:
 

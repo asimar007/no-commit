@@ -10,7 +10,7 @@ export interface ConfigSchema {
 }
 
 const config = new Conf<ConfigSchema>({
-  projectName: "autocommit",
+  projectName: "nocommit",
   defaults: {
     GEMINI_API_KEY: "",
     model: "gemini-2.5-flash",
@@ -47,7 +47,7 @@ export const getApiKey = () => {
   const key = config.get("GEMINI_API_KEY");
   if (!key) {
     throw new KnownError(
-      "Missing API Key. Run: autocommit config set GEMINI_API_KEY=<Key Your API Key>",
+      "Missing API Key. Run: nc config set GEMINI_API_KEY=<Key Your API Key>",
     );
   }
   return key;

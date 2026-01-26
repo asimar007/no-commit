@@ -16,7 +16,7 @@ import { KnownError, handleCliError } from "./error.js";
 
 const program = new Command();
 program
-  .name("autocommit")
+  .name("nocommit")
   .version("0.0.0")
   .description("AI-powered git commit message generator")
   .option("-a, --all", "Stage all tracked changes before committing")
@@ -24,7 +24,7 @@ program
 
 // Main command execution logic for generating and committing messages
 program.action(async (options) => {
-  intro(pc.bgCyan(pc.black(" autocommit ")));
+  intro(pc.bgCyan(pc.black(" nocommit ")));
 
   try {
     await assertGitRepo();

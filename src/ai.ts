@@ -105,7 +105,7 @@ export const generateCommitMessages = async (
 
     if (error.message?.includes("API key")) {
       throw new KnownError(
-        "Invalid Gemini API Key. Run: autocommit config set GEMINI_API_KEY=<key>",
+        "Invalid Gemini API Key. Run: nc config set GEMINI_API_KEY=<key>",
       );
     }
     if (error.message?.includes("Quota")) {
