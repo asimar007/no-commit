@@ -40,7 +40,6 @@
     "commander": "^14.0.2",
     "conf": "^15.0.2",
     "execa": "^9.6.1",
-    "nocommit": "^0.0.1",
     "picocolors": "^1.1.1"
   }
 }
