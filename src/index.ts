@@ -17,7 +17,7 @@ import { KnownError, handleCliError } from "./error.js";
 const program = new Command();
 program
   .name("nocommit")
-  .version("0.0.0")
+  .version("0.0.3")
   .description("AI-powered git commit message generator")
   .option("-a, --all", "Stage all tracked changes before committing")
   .option("-y, --yes", "Skip confirmation and commit with first suggestion");
@@ -122,9 +122,8 @@ program.action(async (options) => {
   }
 });
 
-
 // Command to manage application configuration, including API key and model settings
-const configCmd = program.command("config").description("Manage configuration"); 
+const configCmd = program.command("config").description("Manage configuration");
 
 const VALID_CONFIG_KEYS = [
   "GEMINI_API_KEY",
