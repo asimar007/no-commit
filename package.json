@@ -37,6 +37,7 @@
   "bugs": {
     "url": "https://github.com/asimar007/no-commit/issues"
   },
+  "license": "MIT",
   "files": [
     "dist"
   ],

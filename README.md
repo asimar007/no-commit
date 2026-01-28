@@ -35,7 +35,7 @@ feat: add user authentication with JWT tokens
 
 ```bash
 # Install (choose one)
-brew tap asimar007/no-commit && brew install nocommit  # Homebrew
+brew tap asimar007/no-commit https://github.com/asimar007/no-commit && brew install nocommit  # Homebrew
 npm install -g nocommit                                 # npm
 
 # Set your Gemini API key
@@ -58,7 +58,7 @@ Get your API key from [Google AI Studio](https://aistudio.google.com/apikey).
 ### Using Homebrew (macOS/Linux)
 
 ```bash
-brew tap asimar007/no-commit
+brew tap asimar007/no-commit https://github.com/asimar007/no-commit
 brew install nocommit
 ```
 
@@ -192,3 +192,7 @@ Contributions are welcome! Check out the [GitHub repository](https://github.com/
 ## Maintainers
 
 - **Asim Sk** — [@asimar007](https://github.com/asimar007)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
