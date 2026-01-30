@@ -35,8 +35,10 @@ feat: add user authentication with JWT tokens
 
 ```bash
 # Install (choose one)
-brew tap asimar007/no-commit https://github.com/asimar007/no-commit && brew install nocommit  # Homebrew
-npm install -g nocommit                                 # npm
+npm install -g nocommit
+
+brew tap asimar007/no-commit https://github.com/asimar007/no-commit
+brew install nocommit
 
 # Set your Gemini API key
 nocommit config set GEMINI_API_KEY=your_api_key_here
