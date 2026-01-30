@@ -17,7 +17,7 @@ import { KnownError, handleCliError } from "./error.js";
 const program = new Command();
 program
   .name("nocommit")
-  .version("0.0.4")
+  .version("0.0.6")
   .description("AI-powered git commit message generator")
   .option("-a, --all", "Stage all tracked changes before committing")
   .option("-y, --yes", "Skip confirmation and commit with first suggestion");
