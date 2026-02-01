@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { intro, outro, spinner, select, text, isCancel } from "@clack/prompts";
+import { outro, spinner, select, text, isCancel } from "@clack/prompts";
 import pc from "picocolors";
 import { setConfig, getConfig, ConfigSchema } from "./config.js";
 import {
@@ -14,6 +14,15 @@ import {
 import { generateCommitMessages } from "./ai.js";
 import { KnownError, handleCliError } from "./error.js";
 
+const logo=`▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌
+▐███╗   ██╗ ██████╗      ██████╗ ██████╗ ███╗   ███╗███╗   ███╗██╗████████╗▌
+▐████╗  ██║██╔═══██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██║╚══██╔══╝▌
+▐██╔██╗ ██║██║   ██║    ██║     ██║   ██║██╔████╔██║██╔████╔██║██║   ██║   ▌
+▐██║╚██╗██║██║   ██║    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██║   ██║   ▌
+▐██║ ╚████║╚██████╔╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║██║   ██║   ▌
+▐╚═╝  ╚═══╝ ╚═════╝      ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚═╝   ╚═╝   ▌
+▐▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌`
+
 const program = new Command();
 program
   .name("nocommit")
@@ -24,7 +33,7 @@ program
 
 // Main command execution logic for generating and committing messages
 program.action(async (options) => {
-  intro(pc.bgCyan(pc.black(" nocommit ")));
+  console.log(pc.yellow(logo));
 
   try {
     await assertGitRepo();
