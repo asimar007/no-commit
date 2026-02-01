@@ -14,19 +14,19 @@ import {
 import { generateCommitMessages } from "./ai.js";
 import { KnownError, handleCliError } from "./error.js";
 
-const logo=`▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌
+const logo = `▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌
 ▐███╗   ██╗ ██████╗      ██████╗ ██████╗ ███╗   ███╗███╗   ███╗██╗████████╗▌
 ▐████╗  ██║██╔═══██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██║╚══██╔══╝▌
 ▐██╔██╗ ██║██║   ██║    ██║     ██║   ██║██╔████╔██║██╔████╔██║██║   ██║   ▌
 ▐██║╚██╗██║██║   ██║    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██║   ██║   ▌
 ▐██║ ╚████║╚██████╔╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║██║   ██║   ▌
 ▐╚═╝  ╚═══╝ ╚═════╝      ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚═╝   ╚═╝   ▌
-▐▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌`
+▐▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌`;
 
 const program = new Command();
 program
   .name("nocommit")
-  .version("0.0.7")
+  .version("0.0.8")
   .description("AI-powered git commit message generator")
   .option("-a, --all", "Stage all tracked changes before committing")
   .option("-y, --yes", "Skip confirmation and commit with first suggestion");
@@ -44,7 +44,7 @@ program.action(async (options) => {
 
     if (!(await hasStagedChanges())) {
       throw new KnownError(
-        'No staged changes found. Stage files with "git add ." or use --all flag.',
+        'No staged changes found. Stage files with "git add ." or use --all flag.'
       );
     }
 
@@ -178,7 +178,7 @@ configCmd
       const num = parseInt(val, 10);
       if (isNaN(num) || num < 5000 || num > 120000) {
         console.log(
-          pc.red("timeout must be a number between 5000 and 120000 (ms)"),
+          pc.red("timeout must be a number between 5000 and 120000 (ms)")
         );
         process.exit(1);
       }
