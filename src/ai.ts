@@ -121,13 +121,3 @@ export const generateCommitMessages = async (
     throw new KnownError(`AI error: ${error.message}`);
   }
 };
-
-// generate a single commit message
-export const generateCommitMessage = async (diff: string): Promise<string> => {
-  const messages = await generateCommitMessages({
-    diffSnippets: diff,
-    files: [],
-    count: 1,
-  });
-  return messages[0] || "";
-};

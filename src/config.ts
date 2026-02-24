@@ -20,10 +20,6 @@ const config = new Conf<ConfigSchema>({
   },
 });
 
-// export const getConfig = (key: string) => {
-//     return config.get(key as any);
-//   };
-
 // get Config
 export const getConfig = <K extends keyof ConfigSchema>(
   key: K,
@@ -37,10 +33,6 @@ export const setConfig = <K extends keyof ConfigSchema>(
   value: ConfigSchema[K],
 ) => {
   config.set(key, value);
-};
-
-export const getAllConfig = (): ConfigSchema => {
-  return config.store;
 };
 
 export const getApiKey = () => {

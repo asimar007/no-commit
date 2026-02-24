@@ -39,16 +39,6 @@ export const stageAllChanges = async (): Promise<void> => {
   await execa("git", ["add", "--update"]);
 };
 
-// gets the actual code changes
-export const getStagedDiff = async (): Promise<string> => {
-  try {
-    const { stdout } = await execa("git", ["diff", "--staged", ...EXCLUDE]);
-    return stdout;
-  } catch {
-    return "";
-  }
-};
-
 export const hasStagedChanges = async (): Promise<boolean> => {
   const { stdout } = await execa("git", [
     "diff",
@@ -140,15 +130,4 @@ export const buildDiffSnippets = async (
   } catch {
     return "";
   }
-};
-
-// gets a high-level statistical summary
-export const getStagedSummary = async (): Promise<string> => {
-  const { stdout } = await execa("git", [
-    "diff",
-    "--staged",
-    "--stat",
-    ...EXCLUDE,
-  ]);
-  return stdout;
 };
