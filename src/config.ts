@@ -39,7 +39,7 @@ export const getApiKey = () => {
   const key = config.get("GEMINI_API_KEY");
   if (!key) {
     throw new KnownError(
-      "Missing API Key. Run: nc config set GEMINI_API_KEY=<Key Your API Key>",
+      "Missing API Key. Run: nocommit config set GEMINI_API_KEY=<your-api-key>",
     );
   }
   return key;

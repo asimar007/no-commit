@@ -2,7 +2,15 @@
 import { Command } from "commander";
 import { outro, spinner, select, text, isCancel } from "@clack/prompts";
 import pc from "picocolors";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 import { setConfig, getConfig, ConfigSchema } from "./config.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const { version } = JSON.parse(
+  readFileSync(join(__dirname, "../package.json"), "utf8")
+);
 import {
   assertGitRepo,
   hasStagedChanges,
@@ -26,7 +34,7 @@ const logo = `▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 const program = new Command();
 program
   .name("nocommit")
-  .version("0.0.9")
+  .version(version)
   .description("AI-powered git commit message generator")
   .option("-a, --all", "Stage all tracked changes before committing")
   .option("-y, --yes", "Skip confirmation and commit with first suggestion");
