@@ -150,7 +150,6 @@ nocommit config set model=gemini-2.0-flash
 | `GEMINI_API_KEY` | —                  | Your Google Gemini API key (required)   |
 | `model`          | `gemini-2.5-flash` | Gemini model to use                     |
 | `maxLength`      | `72`               | Max commit message length (20–500)      |
-| `timeout`        | `30000`            | API timeout in ms (5000–120000)         |
 | `generate`       | `3`                | Number of suggestions to generate (1–5) |
 
 ### Example Configuration
@@ -164,9 +163,6 @@ nocommit config set maxLength=100
 
 # Generate only one suggestion
 nocommit config set generate=1
-
-# Increase timeout for slow connections
-nocommit config set timeout=60000
 ```
 
 ## How It Works
@@ -183,9 +179,6 @@ Stage files first with `git add <files>` or use `nocommit -a`.
 
 **"API key not configured"**  
 Set your key with `nocommit config set GEMINI_API_KEY=your_key`.
-
-**Request timeout**  
-Increase timeout: `nocommit config set timeout=60000`
 
 ## Contributing
 

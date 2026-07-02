@@ -146,7 +146,6 @@ const VALID_CONFIG_KEYS = [
   "GEMINI_API_KEY",
   "model",
   "maxLength",
-  "timeout",
   "generate",
 ] as const;
 type ValidConfigKey = (typeof VALID_CONFIG_KEYS)[number];
@@ -182,15 +181,6 @@ configCmd
         process.exit(1);
       }
       setConfig("maxLength", num);
-    } else if (key === "timeout") {
-      const num = parseInt(val, 10);
-      if (isNaN(num) || num < 5000 || num > 120000) {
-        console.log(
-          pc.red("timeout must be a number between 5000 and 120000 (ms)")
-        );
-        process.exit(1);
-      }
-      setConfig("timeout", num);
     } else if (key === "generate") {
       const num = parseInt(val, 10);
       if (isNaN(num) || num < 1 || num > 5) {

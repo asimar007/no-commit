@@ -5,7 +5,6 @@ export interface ConfigSchema {
   GEMINI_API_KEY: string;
   model: string;
   maxLength: number;
-  timeout: number;
   generate: number;
 }
 
@@ -15,7 +14,6 @@ const config = new Conf<ConfigSchema>({
     GEMINI_API_KEY: "",
     model: "gemini-2.5-flash",
     maxLength: 72,
-    timeout: 30000,
     generate: 3,
   },
 });

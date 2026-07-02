@@ -17,7 +17,7 @@ const EXCLUDE = [
 ].flatMap((file) => [":(exclude)" + file]);
 
 // Check git init or not
-export const isGitRepo = async (): Promise<boolean> => {
+const isGitRepo = async (): Promise<boolean> => {
   try {
     await execa("git", ["rev-parse", "--is-inside-work-tree"]);
     return true;

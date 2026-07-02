@@ -49,9 +49,6 @@ Output ${count > 1 ? `exactly ${count} commit messages, one per line` : "only th
 export interface GenerateOptions {
   diffSnippets: string;
   files: string[];
-  maxLength?: number;
-  count?: number;
-  timeout?: number;
 }
 
 // Generates commit messages using Gemini
@@ -60,8 +57,8 @@ export const generateCommitMessages = async (
 ): Promise<string[]> => {
   const apiKey = getApiKey();
   const model = getConfig("model");
-  const maxLength = options.maxLength ?? getConfig("maxLength");
-  const count = options.count ?? getConfig("generate");
+  const maxLength = getConfig("maxLength");
+  const count = getConfig("generate");
 
   const ai = new GoogleGenAI({ apiKey });
   const prompt = buildPrompt(
