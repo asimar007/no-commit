@@ -1,6 +1,6 @@
 {
   "name": "nocommit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered CLI that writes your git commit messages using Google Gemini. Never write a commit message again.",
   "type": "module",
   "main": "dist/index.js",

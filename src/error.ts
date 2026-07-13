@@ -5,12 +5,8 @@ export class KnownError extends Error {
   }
 }
 
-const isKnownError = (error: unknown): error is KnownError => {
-  return error instanceof KnownError;
-};
-
 export const handleCliError = (error: unknown): void => {
-  if (isKnownError(error)) {
+  if (error instanceof KnownError) {
     process.exit(1);
   }
 

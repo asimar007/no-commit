@@ -68,10 +68,7 @@ program.action(async (options) => {
 
     const diffSnippets = await buildDiffSnippets(files);
 
-    const messages = await generateCommitMessages({
-      diffSnippets,
-      files,
-    });
+    const messages = await generateCommitMessages(diffSnippets, files);
 
     s.stop("Generated commit message");
 
@@ -125,10 +122,7 @@ program.action(async (options) => {
 
       if (action === "retry") {
         s.start("Regenerating...");
-        const newMessages = await generateCommitMessages({
-          diffSnippets,
-          files,
-        });
+        const newMessages = await generateCommitMessages(diffSnippets, files);
         s.stop("New message generated");
         selectedMessage = newMessages[0];
       }
@@ -174,20 +168,15 @@ configCmd
       process.exit(1);
     }
 
-    if (key === "maxLength") {
+    const RANGES = { maxLength: [20, 500], generate: [1, 5] } as const;
+    if (key in RANGES) {
+      const [min, max] = RANGES[key as keyof typeof RANGES];
       const num = parseInt(val, 10);
-      if (isNaN(num) || num < 20 || num > 500) {
-        console.log(pc.red("maxLength must be a number between 20 and 500"));
+      if (isNaN(num) || num < min || num > max) {
+        console.log(pc.red(`${key} must be a number between ${min} and ${max}`));
         process.exit(1);
       }
-      setConfig("maxLength", num);
-    } else if (key === "generate") {
-      const num = parseInt(val, 10);
-      if (isNaN(num) || num < 1 || num > 5) {
-        console.log(pc.red("generate must be a number between 1 and 5"));
-        process.exit(1);
-      }
-      setConfig("generate", num);
+      setConfig(key as keyof typeof RANGES, num);
     } else {
       setConfig(key as "GEMINI_API_KEY" | "model", val);
     }

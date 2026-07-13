@@ -45,15 +45,10 @@ WRONG (do not use scope):
 
 Output ${count > 1 ? `exactly ${count} commit messages, one per line` : "only the commit message"}, no explanations or numbering.`;
 
-/** Options for generating commit messages */
-export interface GenerateOptions {
-  diffSnippets: string;
-  files: string[];
-}
-
 // Generates commit messages using Gemini
 export const generateCommitMessages = async (
-  options: GenerateOptions,
+  diffSnippets: string,
+  files: string[],
 ): Promise<string[]> => {
   const apiKey = getApiKey();
   const model = getConfig("model");
@@ -61,12 +56,7 @@ export const generateCommitMessages = async (
   const count = getConfig("generate");
 
   const ai = new GoogleGenAI({ apiKey });
-  const prompt = buildPrompt(
-    options.diffSnippets,
-    options.files,
-    maxLength,
-    count,
-  );
+  const prompt = buildPrompt(diffSnippets, files, maxLength, count);
 
   try {
     const response = await ai.models.generateContent({

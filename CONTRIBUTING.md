@@ -181,6 +181,7 @@ nocommit/
 │   ├── git.ts        # Git operations
 │   └── error.ts      # Error handling utilities
 ├── dist/             # Compiled output
+├── Formula/          # Homebrew formula
 ├── package.json      # Project configuration
 ├── tsconfig.json     # TypeScript configuration
 ├── .nvmrc            # Node.js version

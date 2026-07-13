@@ -3,9 +3,9 @@ require "language/node"
 class Nocommit < Formula
   desc "AI-powered CLI that writes your git commit messages using Google Gemini"
   homepage "https://github.com/asimar007/no-commit"
-  url "https://registry.npmjs.org/nocommit/-/nocommit-0.0.3.tgz"
-  sha256 "d67372b9c9a04610bf26f853ec03881c9804ca9098444d58d2a24d16fd77638b"
-  license "ISC"
+  url "https://registry.npmjs.org/nocommit/-/nocommit-1.0.0.tgz"
+  sha256 "d154ee8cbe8e40d87dd064f13c62a5fb80cd0988547571f651456304c3f52b80"
+  license "MIT"
 
   depends_on "node"
 
