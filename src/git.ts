@@ -1,7 +1,8 @@
 import { execa } from "execa";
 import { KnownError } from "./error.js";
 
-// Exclude from diff to save API Token
+// Left out of the AI diff to save tokens; still listed and committed normally.
+// "top" makes each pattern match from the repo root, even when run from a subfolder.
 const EXCLUDE = [
   "package-lock.json",
   "pnpm-lock.yaml",
@@ -14,7 +15,11 @@ const EXCLUDE = [
   "*.min.js",
   "*.map",
   "*.log",
-].flatMap((file) => [":(exclude)" + file]);
+].map((file) => ":(top,exclude)" + file);
+
+const MAX_FILES = 5;
+const PER_FILE_MAX_LINES = 30;
+const TOTAL_MAX_CHARS = 4000;
 
 // Check git init or not
 const isGitRepo = async (): Promise<boolean> => {
@@ -34,31 +39,25 @@ export const assertGitRepo = async (): Promise<void> => {
   }
 };
 
-// Check Stages everything (git add .)
+// Stages changes to tracked files (git add --update)
 export const stageAllChanges = async (): Promise<void> => {
   await execa("git", ["add", "--update"]);
 };
 
-export const hasStagedChanges = async (): Promise<boolean> => {
+// Staged file names, relative to the repo root
+const listStagedFiles = async (...pathspecs: string[]): Promise<string[]> => {
   const { stdout } = await execa("git", [
     "diff",
     "--staged",
     "--name-only",
-    ...EXCLUDE,
-  ]);
-  return stdout.trim().length > 0;
-};
-
-// gets the list of filenames
-export const getStagedFiles = async (): Promise<string[]> => {
-  const { stdout } = await execa("git", [
-    "diff",
-    "--staged",
-    "--name-only",
-    ...EXCLUDE,
+    "--",
+    ":/",
+    ...pathspecs,
   ]);
   return stdout.split("\n").filter(Boolean);
 };
+
+export const getStagedFiles = (): Promise<string[]> => listStagedFiles();
 
 // git commit -m "your message here"
 export const commitChanges = async (message: string): Promise<void> => {
@@ -68,66 +67,49 @@ export const commitChanges = async (message: string): Promise<void> => {
 };
 
 /**
- * Extracts only changed lines from diff for token efficiency.
- * Limits: 5 files max, 30 lines per file, 4000 chars total.
+ * Extracts only changed lines from the staged diff for token efficiency.
+ * Skips EXCLUDE files. Limits: 5 files, 30 lines per file, 4000 chars total.
  */
+export const buildDiffSnippets = async (): Promise<string> => {
+  const targetFiles = (await listStagedFiles(...EXCLUDE)).slice(0, MAX_FILES);
+  const parts: string[] = [];
+  let remaining = TOTAL_MAX_CHARS;
 
-export const buildDiffSnippets = async (
-  files: string[],
-  perFileMaxLines: number = 30,
-  totalMaxChars: number = 4000,
-): Promise<string> => {
-  try {
-    const targetFiles = files.slice(0, 5);
-    const parts: string[] = [];
-    let remaining = totalMaxChars;
+  for (const file of targetFiles) {
+    const { stdout } = await execa("git", [
+      "diff",
+      "--cached",
+      "--unified=0",
+      "--",
+      ":(top,literal)" + file,
+    ]);
 
-    for (const file of targetFiles) {
-      const { stdout } = await execa("git", [
-        "diff",
-        "--cached",
-        "--unified=0",
-        "--",
-        file,
-      ]);
+    if (!stdout) continue;
 
-      if (!stdout) continue;
+    const lines = stdout.split("\n").filter(Boolean);
+    const picked: string[] = [];
 
-      const lines = stdout.split("\n").filter(Boolean);
-      const picked: string[] = [];
-      let count = 0;
+    for (const line of lines) {
+      const isHunk = line.startsWith("@@");
+      const isChange =
+        (line.startsWith("+") || line.startsWith("-")) &&
+        !line.startsWith("+++") &&
+        !line.startsWith("---");
 
-      for (const line of lines) {
-        const isHunk = line.startsWith("@@");
-        const isChange =
-          (line.startsWith("+") || line.startsWith("-")) &&
-          !line.startsWith("+++") &&
-          !line.startsWith("---");
-
-        if (isHunk || isChange) {
-          picked.push(line);
-          count++;
-          if (count >= perFileMaxLines) break;
-        }
+      if (isHunk || isChange) {
+        picked.push(line);
+        if (picked.length >= PER_FILE_MAX_LINES) break;
       }
-
-      if (picked.length > 0) {
-        const block = [`# ${file}`, ...picked].join("\n");
-        if (block.length <= remaining) {
-          parts.push(block);
-          remaining -= block.length;
-        } else {
-          parts.push(block.slice(0, Math.max(0, remaining)));
-          remaining = 0;
-        }
-      }
-
-      if (remaining <= 0) break;
     }
 
-    if (parts.length === 0) return "";
-    return parts.join("\n\n");
-  } catch {
-    return "";
+    if (picked.length > 0) {
+      const block = [`# ${file}`, ...picked].join("\n");
+      parts.push(block.slice(0, remaining));
+      remaining -= Math.min(block.length, remaining);
+    }
+
+    if (remaining <= 0) break;
   }
+
+  return parts.join("\n\n");
 };

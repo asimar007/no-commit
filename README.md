@@ -52,7 +52,7 @@ Get your API key from [Google AI Studio](https://aistudio.google.com/apikey).
 
 ## Requirements
 
-- Node.js v18 or higher
+- Node.js v22 or higher
 - A Google Gemini API key
 
 ## Installation
@@ -116,7 +116,7 @@ nocommit
 nocommit -a
 
 # Stage all and commit without confirmation
-nocommit --yes
+nocommit -a --yes
 ```
 
 ### Interactive Menu
@@ -145,12 +145,11 @@ nocommit config set model=gemini-2.0-flash
 
 ### Available Options
 
-| Option           | Default            | Description                             |
-| ---------------- | ------------------ | --------------------------------------- |
-| `GEMINI_API_KEY` | —                  | Your Google Gemini API key (required)   |
-| `model`          | `gemini-2.5-flash` | Gemini model to use                     |
-| `maxLength`      | `72`               | Max commit message length (20–500)      |
-| `generate`       | `3`                | Number of suggestions to generate (1–5) |
+| Option           | Default                 | Description                           |
+| ---------------- | ----------------------- | ------------------------------------- |
+| `GEMINI_API_KEY` | —                       | Your Google Gemini API key (required) |
+| `model`          | `gemini-3.5-flash-lite` | Gemini model to use                   |
+| `maxLength`      | `72`                    | Max commit message length (20–500)    |
 
 ### Example Configuration
 
@@ -160,16 +159,13 @@ nocommit config set model=gemini-2.0-flash
 
 # Allow longer commit messages
 nocommit config set maxLength=100
-
-# Generate only one suggestion
-nocommit config set generate=1
 ```
 
 ## How It Works
 
 1. **Diff** — nocommit runs `git diff --staged` to capture your changes
 2. **Analyze** — Changes are sent to Google's Gemini AI
-3. **Generate** — Gemini returns commit message suggestions following conventional commit format
+3. **Generate** — Gemini returns a commit message following conventional commit format
 4. **Commit** — You review, optionally edit, and commit
 
 ## Troubleshooting

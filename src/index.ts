@@ -5,7 +5,7 @@ import pc from "picocolors";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { setConfig, getConfig, ConfigSchema } from "./config.js";
+import { setConfig, getConfig } from "./config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(
@@ -13,13 +13,12 @@ const { version } = JSON.parse(
 );
 import {
   assertGitRepo,
-  hasStagedChanges,
   stageAllChanges,
   commitChanges,
   getStagedFiles,
   buildDiffSnippets,
 } from "./git.js";
-import { generateCommitMessages } from "./ai.js";
+import { generateCommitMessage } from "./ai.js";
 import { KnownError, handleCliError } from "./error.js";
 
 const logo = `▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌
@@ -50,7 +49,9 @@ program.action(async (options) => {
       await stageAllChanges();
     }
 
-    if (!(await hasStagedChanges())) {
+    const files = await getStagedFiles();
+
+    if (files.length === 0) {
       throw new KnownError(
         'No staged changes found. Stage files with "git add ." or use --all flag.'
       );
@@ -58,29 +59,25 @@ program.action(async (options) => {
 
     const s = spinner();
     s.start("Detecting staged files...");
-
-    const files = await getStagedFiles();
-
     s.stop(`Found ${files.length} staged file(s):`);
     console.log(pc.dim(files.map((f) => `  ${f}`).join("\n")));
 
     s.start("Analyzing changes with AI...");
 
-    const diffSnippets = await buildDiffSnippets(files);
+    const diffSnippets = await buildDiffSnippets();
 
-    const messages = await generateCommitMessages(diffSnippets, files);
+    const message = await generateCommitMessage(diffSnippets, files);
 
     s.stop("Generated commit message");
 
     if (options.yes) {
-      const message = messages[0];
       console.log(pc.dim(`Using: ${message}`));
       await commitChanges(message);
       outro(pc.green("✔ Committed!"));
       return;
     }
 
-    let selectedMessage = messages[0];
+    let selectedMessage = message;
 
     while (true) {
       const action = await select({
@@ -122,9 +119,8 @@ program.action(async (options) => {
 
       if (action === "retry") {
         s.start("Regenerating...");
-        const newMessages = await generateCommitMessages(diffSnippets, files);
+        selectedMessage = await generateCommitMessage(diffSnippets, files);
         s.stop("New message generated");
-        selectedMessage = newMessages[0];
       }
     }
   } catch (error: any) {
@@ -140,7 +136,6 @@ const VALID_CONFIG_KEYS = [
   "GEMINI_API_KEY",
   "model",
   "maxLength",
-  "generate",
 ] as const;
 type ValidConfigKey = (typeof VALID_CONFIG_KEYS)[number];
 
@@ -168,15 +163,13 @@ configCmd
       process.exit(1);
     }
 
-    const RANGES = { maxLength: [20, 500], generate: [1, 5] } as const;
-    if (key in RANGES) {
-      const [min, max] = RANGES[key as keyof typeof RANGES];
+    if (key === "maxLength") {
       const num = parseInt(val, 10);
-      if (isNaN(num) || num < min || num > max) {
-        console.log(pc.red(`${key} must be a number between ${min} and ${max}`));
+      if (isNaN(num) || num < 20 || num > 500) {
+        console.log(pc.red("maxLength must be a number between 20 and 500"));
         process.exit(1);
       }
-      setConfig(key as keyof typeof RANGES, num);
+      setConfig("maxLength", num);
     } else {
       setConfig(key as "GEMINI_API_KEY" | "model", val);
     }
@@ -188,37 +181,22 @@ configCmd
   .command("get [key]")
   .description("Get config value(s)")
   .action((key) => {
-    if (key) {
-      if (!VALID_CONFIG_KEYS.includes(key as ValidConfigKey)) {
-        console.log(pc.red(`Invalid key: ${key}`));
-        console.log(pc.yellow(`Valid keys: ${VALID_CONFIG_KEYS.join(", ")}`));
-        process.exit(1);
-      }
-      const val = getConfig(key as keyof ConfigSchema);
+    if (key && !VALID_CONFIG_KEYS.includes(key as ValidConfigKey)) {
+      console.log(pc.red(`Invalid key: ${key}`));
+      console.log(pc.yellow(`Valid keys: ${VALID_CONFIG_KEYS.join(", ")}`));
+      process.exit(1);
+    }
+
+    const keys = key ? [key as ValidConfigKey] : VALID_CONFIG_KEYS;
+    if (!key) console.log(pc.bold("Current configuration:"));
+    for (const k of keys) {
+      const val = getConfig(k);
       // Mask API key for security
-      if (
-        key === "GEMINI_API_KEY" &&
-        typeof val === "string" &&
-        val.length > 8
-      ) {
-        console.log(`${key}: ${val.slice(0, 4)}...${val.slice(-4)}`);
-      } else {
-        console.log(`${key}: ${val}`);
-      }
-    } else {
-      console.log(pc.bold("Current configuration:"));
-      for (const k of VALID_CONFIG_KEYS) {
-        const val = getConfig(k as keyof ConfigSchema);
-        if (
-          k === "GEMINI_API_KEY" &&
-          typeof val === "string" &&
-          val.length > 8
-        ) {
-          console.log(`  ${k}: ${val.slice(0, 4)}...${val.slice(-4)}`);
-        } else {
-          console.log(`  ${k}: ${val}`);
-        }
-      }
+      const shown =
+        k === "GEMINI_API_KEY" && typeof val === "string" && val.length > 8
+          ? `${val.slice(0, 4)}...${val.slice(-4)}`
+          : val;
+      console.log(`${key ? "" : "  "}${k}: ${shown}`);
     }
   });
 

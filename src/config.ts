@@ -1,22 +1,29 @@
 import Conf from "conf";
+import { chmodSync } from "fs";
 import { KnownError } from "./error.js";
 
 export interface ConfigSchema {
   GEMINI_API_KEY: string;
   model: string;
   maxLength: number;
-  generate: number;
 }
 
+// The file holds the API key, so only the owner may read it
 const config = new Conf<ConfigSchema>({
   projectName: "nocommit",
+  configFileMode: 0o600,
   defaults: {
     GEMINI_API_KEY: "",
-    model: "gemini-2.5-flash",
+    model: "gemini-3.5-flash-lite",
     maxLength: 72,
-    generate: 3,
   },
 });
+
+// configFileMode only applies on write; also tighten files made by older versions.
+// Best effort: some file systems (e.g. Windows) cannot chmod, and that must not stop the CLI.
+try {
+  chmodSync(config.path, 0o600);
+} catch {}
 
 // get Config
 export const getConfig = <K extends keyof ConfigSchema>(

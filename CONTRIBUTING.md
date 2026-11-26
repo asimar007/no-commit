@@ -16,7 +16,7 @@ Thank you for your interest in contributing to nocommit! This guide will help yo
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js**: Version 18 or higher (as specified in `.nvmrc`)
+- **Node.js**: Version 22 or higher (as specified in `.nvmrc`)
 - **npm**: Comes with Node.js
 - **nvm**: For managing Node.js versions (optional but recommended)
 - **Git**: For version control
@@ -148,8 +148,8 @@ git checkout -b feature/your-feature-name
 # Run type checking
 npm run type-check
 
-# Build the project
-npm run build
+# Build the project and run the tests
+npm test
 
 # Test the CLI manually
 node dist/index.js --help
@@ -180,13 +180,13 @@ nocommit/
 │   ├── config.ts     # Configuration management
 │   ├── git.ts        # Git operations
 │   └── error.ts      # Error handling utilities
+├── test/             # Tests (node:test, run against dist/)
 ├── dist/             # Compiled output
 ├── Formula/          # Homebrew formula
 ├── package.json      # Project configuration
 ├── tsconfig.json     # TypeScript configuration
 ├── .nvmrc            # Node.js version
 ├── .gitignore        # Git ignore rules
-├── .npmignore        # npm publish ignore rules
 ├── LICENSE           # MIT License
 └── README.md         # Documentation
 ```

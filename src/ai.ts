@@ -6,7 +6,6 @@ const buildPrompt = (
   diffSnippets: string,
   fileList: string[],
   maxLength: number,
-  count: number,
 ) => `You are an expert developer writing git commit messages.
 
 CHANGES:
@@ -14,12 +13,12 @@ Files: ${fileList.join(", ")}
 
 ${diffSnippets ? `CODE DIFF:\n${diffSnippets}` : ""}
 
-TASK: Generate ${count} different commit message${count > 1 ? "s" : ""} for these changes.
+TASK: Generate one commit message for these changes.
 
 FORMAT RULES:
 - Use Conventional Commits: <type>: <subject>
 - NO scope (use "feat: add login" NOT "feat(auth): add login")
-- Maximum ${maxLength} characters per message
+- Maximum ${maxLength} characters
 - Use imperative mood ("add" not "added")
 - Be specific but concise
 
@@ -43,29 +42,36 @@ EXAMPLES (correct):
 WRONG (do not use scope):
 - feat(auth): add login
 
-Output ${count > 1 ? `exactly ${count} commit messages, one per line` : "only the commit message"}, no explanations or numbering.`;
+Output only the commit message, no explanations or numbering.`;
 
-// Generates commit messages using Gemini
-export const generateCommitMessages = async (
+// Cleans the raw AI reply into commit messages: drops code fences, strips numbering and bullets
+export const parseCommitMessages = (text: string): string[] =>
+  text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => !line.startsWith("```"))
+    .map((line) => line.replace(/^(\d+[.)]|[-*])\s*/, ""))
+    .filter((line) => line.length > 0);
+
+// Generates a commit message using Gemini
+export const generateCommitMessage = async (
   diffSnippets: string,
   files: string[],
-): Promise<string[]> => {
+): Promise<string> => {
   const apiKey = getApiKey();
   const model = getConfig("model");
   const maxLength = getConfig("maxLength");
-  const count = getConfig("generate");
 
-  const ai = new GoogleGenAI({ apiKey });
-  const prompt = buildPrompt(diffSnippets, files, maxLength, count);
+  // SDK 3.x defaults to API v1, which lacks preview models; v1beta serves every model
+  const ai = new GoogleGenAI({ apiKey, apiVersion: "v1beta" });
+  const prompt = buildPrompt(diffSnippets, files, maxLength);
 
   try {
+    // No maxOutputTokens: on thinking models it also caps thinking and can leave the answer empty
     const response = await ai.models.generateContent({
       model,
       contents: prompt,
-      config: {
-        maxOutputTokens: 256,
-        temperature: 0.7,
-      },
+      config: { temperature: 0.7 },
     });
 
     const text = response.text?.trim();
@@ -73,18 +79,11 @@ export const generateCommitMessages = async (
       throw new KnownError("AI returned empty response. Please try again");
     }
 
-    // Parse response: split by newlines, remove empty lines
-    const messages = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0 && !line.match(/^\d+\./))
-      .map((line) => line.replace(/^[-*]\s*/, ""));
-
-    if (messages.length === 0) {
+    const [message] = parseCommitMessages(text);
+    if (!message) {
       throw new KnownError("AI returned no valid commit messages.");
     }
-
-    return messages.slice(0, count);
+    return message;
   } catch (error: any) {
     if (error instanceof KnownError) {
       throw error;
@@ -95,12 +94,13 @@ export const generateCommitMessages = async (
         "Invalid Gemini API Key. Run: nocommit config set GEMINI_API_KEY=<key>",
       );
     }
-    if (error.message?.includes("Quota")) {
+    if (error.status === 429) {
       throw new KnownError(
         "API quota exceeded. Please check your Gemini API usage limits.",
       );
     }
-    if (error.message?.includes("network") || error.code === "ENOTFOUND") {
+    // Node's fetch reports DNS, refused and reset connections all as "fetch failed"
+    if (error.message?.includes("fetch failed")) {
       throw new KnownError(
         "Network error. Please check your internet connection.",
       );
